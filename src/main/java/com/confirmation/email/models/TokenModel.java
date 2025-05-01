@@ -27,7 +27,15 @@ public class TokenModel {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private UserModel usuario;
+    private UserModel user;
+
+    public TokenModel(){}
+
+    public TokenModel(String token, LocalDateTime dataExpiracao, UserModel user){
+        this.token = token;
+        this.dataExpiracao = dataExpiracao;
+        this.user = user;
+    }
 
     public Long getId() {
         return id;
@@ -54,10 +62,10 @@ public class TokenModel {
     }
 
     public UserModel getUsuario() {
-        return usuario;
+        return user;
     }
 
-    public void setUsuario(UserModel usuario) {
-        this.usuario = usuario;
+    public void setUsuario(UserModel user) {
+        this.user = user;
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.confirmation.email.models.UserModel;
 import com.confirmation.email.repositories.UserRepository;
+import com.confirmation.email.services.TokenService;
+
 
 @RestController
 @RequestMapping
@@ -24,11 +26,12 @@ import com.confirmation.email.repositories.UserRepository;
 public class UserController {
     
     private UserRepository userRepository;
+    private TokenService tokenService;
 
-    public UserController(UserRepository userRepository){
+    public UserController(UserRepository userRepository, TokenService tokenService){
         this.userRepository = userRepository;
+        this.tokenService = tokenService;
     }
-
 
     @GetMapping("/listar")
     public ResponseEntity<List<UserModel>> listarTodosUsuarios(){
@@ -38,7 +41,12 @@ public class UserController {
     @PostMapping("/criar")
     public ResponseEntity<UserModel> criarNovoUsuario(@RequestBody UserModel criarUsuario){
         criarUsuario.setId(null);
-        return new ResponseEntity<>(userRepository.save(criarUsuario), HttpStatus.OK);
+        
+        UserModel salvo = userRepository.save(criarUsuario);
+
+        tokenService.gerarTokenParaUsuario(salvo);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/atualizar")

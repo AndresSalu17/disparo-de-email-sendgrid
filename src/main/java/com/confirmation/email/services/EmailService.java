@@ -12,10 +12,13 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @Service
 public class EmailService {
-
-    private final String API_KEY = System.getenv("API_KEY");
+    
+    Dotenv dotenv = Dotenv.load();
+    private final String API_KEY = dotenv.get("API_KEY");;
 
     public String enviarConfirmacaoEmail(String destino, String token){
 
