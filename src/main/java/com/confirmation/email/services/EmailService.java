@@ -22,12 +22,12 @@ public class EmailService {
 
     public String enviarConfirmacaoEmail(String destino, String token){
 
-        Email de = new Email("andressalu@ymail.com");
+        Email de = new Email("contato.andres.salu@gmail.com");
         String assunto = "Confirmação de email";
         Email para = new Email(destino);
         
         String link = "http://localhost:8080/confirmar?token=" + token;
-        String conteudoEmail = "Olá!\n\nClique no link abaixo para confirmar seu cadastro:\n" + link;
+        String conteudoEmail = "Olá!\n\nCadastro realizado com sucesso!\n\nClique no link abaixo para confirmar seu cadastro:\n\n" + link;
 
         Content content = new Content("text/plain", conteudoEmail);
         Mail mail = new Mail(de, assunto, para, content);
