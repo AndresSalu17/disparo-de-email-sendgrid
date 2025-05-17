@@ -1,6 +1,6 @@
 package com.confirmation.email.models;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -36,8 +36,9 @@ public class UserModel {
     @NotBlank(message = "Senha é obrigatória.")
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<TokenModel> tokens;
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private TokenModel token;
 
     public Long getId(){
         return id;
@@ -79,11 +80,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public List<TokenModel> getTokens(){
-        return tokens;
+    public TokenModel getToken(){
+        return token;
     }
 
-    public void setTokens(List<TokenModel> tokens){
-        this.tokens = tokens;
+    public void setToken(TokenModel token){
+        this.token = token;
     }
 }
