@@ -1,6 +1,8 @@
 package com.confirmation.email.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,24 +41,59 @@ public class UserController {
     }
 
     @PostMapping("/criar")
-    public ResponseEntity<UserModel> criarNovoUsuario(@RequestBody UserModel criarUsuario){
+    public ResponseEntity<HashMap<String, String>> criarNovoUsuario(@RequestBody UserModel criarUsuario){
         criarUsuario.setId(null);
+
+        Optional<UserModel> existente = userRepository.findByEmail(criarUsuario.getEmail());
+
+        if(existente.isPresent()){
+            HashMap<String, String> erro = new HashMap<>();
+            erro.put("error", "E-mail e/ou senha já utilizados.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+        }
         
         UserModel salvo = userRepository.save(criarUsuario);
 
         tokenService.gerarTokenParaUsuario(salvo);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        HashMap<String, String> resposta = new HashMap<>();
+        resposta.put("mensagem", "Usuário criado com sucesso. Verifique seu e-mail.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<UserModel> atualizarUsuario(@RequestBody UserModel atualizarUsuario){
-        return new ResponseEntity<>(userRepository.save(atualizarUsuario), HttpStatus.OK);
+    public ResponseEntity<HashMap<String, String>> atualizarUsuario(@RequestBody UserModel atualizarUsuario){
+        HashMap<String, String> response = new HashMap<>();
+
+        try {
+            userRepository.save(atualizarUsuario);
+            response.put("response", "Usuário atualizado com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+            
+        } catch (Exception e) {
+            response.put("error", "Falha ao atualizar o usuário!");
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } 
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<UserModel> deletarUsuario(@PathVariable Long id){
-        userRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<HashMap<String, String>> deletarUsuario(@PathVariable Long id){
+        HashMap<String, String> response = new HashMap<>();
+
+        Optional<UserModel> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            userRepository.delete(user.get());
+            response.put("response", "Usuário deletado com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } else{
+        
+            response.put("error", "Erro ao deletar o usuário!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 }
+
+//PAREI AQUI, CONFIGURANDO O RETORNO EM JSON

@@ -18,7 +18,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class EmailService {
     
     Dotenv dotenv = Dotenv.load();
-    private final String API_KEY = dotenv.get("API_KEY");;
+    private final String API_KEY = dotenv.get("API_KEY");
+    private LogService logService;
+
+    public EmailService(LogService logService){
+        this.logService = logService;
+    }
 
     public String enviarConfirmacaoEmail(String destino, String token){
 
@@ -42,12 +47,23 @@ public class EmailService {
 
             Response response = sg.api(request);
 
+            logService.registrarLog(
+                "Envio de e-mail",
+                "Email de confirmação enviado com sucesso para: " + destino,
+                destino,
+                "SUCESSO"
+            );
+
             return String.format("Status Code: %d%nBody: %s%nHeaders: %s",
                 response.getStatusCode(),
                 response.getBody(),
                 response.getHeaders());
 
         }catch(IOException e){
+            logService.registrarLog("Envio de e-mail", 
+            "Falha ao enviar o e-mail: " + e.getMessage(), 
+            destino, 
+            "ERRO");
             throw new RuntimeException("Erro ao salvar o email: ", e);
         }
     }

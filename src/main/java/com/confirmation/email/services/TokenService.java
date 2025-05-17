@@ -21,6 +21,7 @@ public class TokenService {
     }
     
     public void gerarTokenParaUsuario(UserModel user){
+        
         String token = UUID.randomUUID().toString();
         LocalDateTime expiracao = LocalDateTime.now().plusHours(24);
 
